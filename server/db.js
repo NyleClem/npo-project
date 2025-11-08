@@ -9,16 +9,4 @@ const pool = new Pool({
   database: process.env.DB_NAME,
 });
 
-//Test connection
-(async () => {
-  try {
-    const res = await pool.query("SELECT NOW()");
-    console.log("✅ Connected to DB:", res.rows[0]);
-  } catch (err) {
-    console.error("Database connection error:", err.message);
-  } finally {
-    pool.end();
-  }
-})();
-
 module.exports = pool;

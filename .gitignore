@@ -1,0 +1,14 @@
+# Node
+server/node_modules
+client/node_modules
+npm-debug.log*
+yarn-error.log*
+
+# Build outputs
+server/dist
+client/dist
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
