@@ -6,9 +6,7 @@ export default function Dashboard() {
     <Layout>
       <section className="bg-gray-900/70 backdrop-blur rounded-2xl shadow-xl border border-white/5 p-8 sm:p-10">
         <header className="text-center space-y-2 mb-8">
-          <h1 className="text-3xl sm:text-4xl font-extrabold">
-            NFL Personnel Optimizer (Prototype)
-          </h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold">Dashboard</h1>
           <p className="text-sm text-gray-400">
             Start by uploading a CSV or view stored play data.
           </p>
