@@ -1,6 +1,6 @@
 require("dotenv").config();
+//Connection to DB
 const { Pool } = require("pg");
-// define these in a personal .env file with your personal credentials that you wont push to github
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,

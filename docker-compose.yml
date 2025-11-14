@@ -1,7 +1,7 @@
 services:
   db: # PostgreSQL database service
     image: postgres:16-alpine # Lightweight Postgres 16 image
-    container_name: npo_db # Friendly name for 'docker ps'
+    container_name: npo_db #name for 'docker ps'
     env_file:
       - ./.env # Load shared DB vars (DB_USER, DB_PASSWORD, DB_NAME) from root .env
     environment:
@@ -13,7 +13,7 @@ services:
       - "5432:5432" # Expose Postgres to host on default port
     volumes:
       - db_data:/var/lib/postgresql/data # Persist database files across container recreations
-      # - ./db/init:/docker-entrypoint-initdb.d  # (Optional) Auto-run .sql/.sh on first init
+      - ./db/init:/docker-entrypoint-initdb.d # (Optional) Auto-run .sql/.sh on first init
     healthcheck: # Make sure Postgres is actually ready before api starts
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -h localhost"]
       interval: 2s
@@ -25,25 +25,22 @@ services:
   api: # Node/Express backend service
     build:
       context: ./server # Dockerfile lives in ./server
-      dockerfile: Dockerfile # Uses your provided Dockerfile
-    container_name: npo_api # Friendly name for 'docker ps'
+      dockerfile: Dockerfile # Uses provided Dockerfile
+    container_name: npo_api #  name for 'docker ps'
     env_file:
       - ./.env # Bring in shared DB vars (DB_USER, DB_PASSWORD, DB_NAME)
-      - ./server/.env # (Optional) Backend-only env (JWT, etc.)
+      - ./server/.env # Backend-only env (JWT, etc.)
     environment:
       DB_HOST: db # Hostname = service name of Postgres on compose network
       DB_PORT: "5432" # Default Postgres port inside the network
       PORT: "3000" # App's listen port inside the container
-      # You can also set DATABASE_URL here if you prefer a single connection string
-      # DATABASE_URL: "postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}"
+
     ports:
-      - "3000:3000" # Map container:3000 to host:3000 for your API
+      - "3000:3000" # Map container:3000 to host:3000 for API
     depends_on:
       db:
         condition: service_healthy # Wait until Postgres healthcheck passes
     restart: unless-stopped # Auto-restart for resilience
-    # volumes:
-    #   - ./server:/app                      # (Optional) Bind mount for live-dev; requires dev deps (nodemon) in image
 
   client: # React + Vite development server
     build: # Build instructions for the client image
@@ -55,7 +52,7 @@ services:
     ports:
       - "5173:5173" # Expose Vite dev server to the host
     depends_on:
-      - api # Start after API (ordering only, not health)
+      - api # Start after API
     restart: unless-stopped # Keep it running unless manually stopped
 
 volumes:
