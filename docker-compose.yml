@@ -49,6 +49,9 @@ services:
     container_name: npo_client # Name shown in `docker ps`
     environment:
       VITE_API_BASE_URL: "http://localhost:3000" # Frontend will call backend at this base URL
+    volumes:
+      - ./client:/app #live code from host
+      - /app/node_modules
     ports:
       - "5173:5173" # Expose Vite dev server to the host
     depends_on:
