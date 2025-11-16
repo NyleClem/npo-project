@@ -1,3 +1,5 @@
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const pool = require("./db"); // ← Imports the shared Postgres pool from server/db.js
 const express = require("express");
 const cors = require("cors");
@@ -31,6 +33,23 @@ app.post("/play", async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
+  }
+});
+//CSV upload with multer
+app.post("/upload", upload.single("file"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    console.log("Received CSV file:", req.file.originalname);
+    console.log("Saved at path:", req.file.path); // super helpful for debugging
+
+    // ✅ important: tell the client we're done
+    return res.status(200).send("File received.");
+  } catch (err) {
+    console.error("Upload error:", err.message);
+    return res.status(500).send("Server Error");
   }
 });
 
