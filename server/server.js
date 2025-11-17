@@ -4,6 +4,7 @@ const pool = require("./db"); // ← Imports the shared Postgres pool from serve
 const express = require("express");
 const cors = require("cors");
 const { parsePlayCsv } = require("./csvPlayParser");
+const { insertPlays } = require("./playInsertService");
 require("dotenv").config();
 const app = express();
 app.use(cors());
@@ -12,12 +13,12 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000; //  choose env PORT, fallback to 3000
 // healthcheck route to prove API can reach the Postgres container.
 app.get("/db-ping", async (req, res) => {
-  // ← Define GET /db-ping for a quick DB connectivity check
+  //  Define GET /db-ping for a quick DB connectivity check
   try {
-    const result = await pool.query("SELECT 1 AS ok"); // ← if it works, DB connection is good
-    res.json({ ok: true, db: result.rows[0] }); // ← Send success JSON back to the client
+    const result = await pool.query("SELECT 1 AS ok"); //  if it works, DB connection is good
+    res.json({ ok: true, db: result.rows[0] }); //  Send success JSON back to the client
   } catch (err) {
-    console.error("DB ping failed:", err); // ← Log the real error to the server console for debugging
+    console.error("DB ping failed:", err); //  Log the real error to the server console for debugging
     res.status(500).json({ ok: false, error: err.message }); // ← Send a safe error payload to the client
   }
 });
@@ -49,10 +50,10 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     console.log("Received CSV file:", req.file.originalname);
     console.log("Saved at path:", req.file.path);
 
-    // 🔹 Parse the CSV into normalized rows (no DB insert yet)
+    //  Parse the CSV into normalized rows (no DB insert yet)
     const { rows, malformedCount } = await parsePlayCsv(req.file.path);
 
-    // 🔹 LOG A SAMPLE ROW HERE
+    // LOG A SAMPLE ROW HERE
     if (rows.length > 0) {
       console.log("Sample normalized row:", rows[0]);
     } else {
@@ -62,13 +63,19 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     console.log(
       `Parsed CSV: ${rows.length} valid rows, ${malformedCount} malformed rows`
     );
+    //INSERT parsed rows into the DB
+    const { insertedCount, dbErrorCount } = await insertPlays(rows);
+    console.log(
+      `DB insert summary: inserted=${insertedCount}, dbErrors=${dbErrorCount}`
+    );
 
-    // For this sprint, just return counts + a sample
+    // return all counts to the UI
     return res.status(200).json({
       success: true,
       rowCount: rows.length,
       malformedCount,
-      // sampleRow: rows[0] || null, // uncomment if you want to debug via API
+      insertedCount,
+      dbErrorCount,
     });
   } catch (err) {
     if (err.code === "MISSING_HEADERS") {
@@ -76,10 +83,10 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ success: false, message: err.message });
     }
 
-    console.error("CSV parse error:", err);
+    console.error("CSV parse/insert error:", err);
     return res.status(500).json({
       success: false,
-      message: "Failed to parse CSV.",
+      message: "Failed to parse and insert CSV.",
     });
   }
 });
