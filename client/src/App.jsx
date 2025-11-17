@@ -1,8 +1,9 @@
 // client/src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/UploadPage";
-import ViewData from "./pages/ViewDataPage";
+import ViewDataPage from "./pages/ViewDataPage";
 
 export default function App() {
   return (
@@ -10,7 +11,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/upload" element={<Upload />} />
-        <Route path="/view" element={<ViewData />} />
+        <Route path="/view" element={<ViewDataPage />} />
       </Routes>
     </BrowserRouter>
   );
