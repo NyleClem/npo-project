@@ -41,9 +41,8 @@ export default function Upload() {
     setFile(selected);
     setFileName(selected.name);
   }
-
   async function handleSubmit(e) {
-    e.preventDefault(); // ✅ stay SPA, no reload
+    e.preventDefault(); //  stay SPA, no reload
     setError("");
     setStatus("");
 
@@ -57,19 +56,33 @@ export default function Upload() {
 
       const formData = new FormData();
       formData.append("file", file); // field name "file" for backend
-      //fetch server.js "/upload" route
+
+      // fetch server.js "/upload" route
       const response = await fetch(`${apiBaseUrl}/upload`, {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        //  generic error text
-        throw new Error("Upload failed. Please try again.");
+      // Try to read JSON either way (success or error)
+      let data = null;
+      try {
+        data = await response.json();
+      } catch {
+        // if server didn't send JSON, we'll fall back to generic messages
       }
 
-      //  simple success message
-      setStatus("File uploaded successfully.");
+      if (!response.ok || !data?.success) {
+        const message =
+          data?.message ||
+          "Upload failed. Please check your CSV and try again.";
+        throw new Error(message);
+      }
+
+      //  Show parse result summary from backend
+      setStatus(
+        `File uploaded and parsed. Rows: ${data.rowCount}, malformed: ${data.malformedCount}.`
+      );
+
       setFile(null);
       setFileName("");
     } catch (err) {

@@ -3,6 +3,7 @@ const upload = multer({ dest: "uploads/" });
 const pool = require("./db"); // ← Imports the shared Postgres pool from server/db.js
 const express = require("express");
 const cors = require("cors");
+const { parsePlayCsv } = require("./csvPlayParser");
 require("dotenv").config();
 const app = express();
 app.use(cors());
@@ -35,21 +36,51 @@ app.post("/play", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-//CSV upload with multer
-app.post("/upload", upload.single("file"), (req, res) => {
+
+// CSV upload with multer
+app.post("/upload", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).send("No file uploaded.");
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded." });
     }
 
     console.log("Received CSV file:", req.file.originalname);
-    console.log("Saved at path:", req.file.path); // super helpful for debugging
+    console.log("Saved at path:", req.file.path);
 
-    // ✅ important: tell the client we're done
-    return res.status(200).send("File received.");
+    // 🔹 Parse the CSV into normalized rows (no DB insert yet)
+    const { rows, malformedCount } = await parsePlayCsv(req.file.path);
+
+    // 🔹 LOG A SAMPLE ROW HERE
+    if (rows.length > 0) {
+      console.log("Sample normalized row:", rows[0]);
+    } else {
+      console.log("No valid rows parsed from CSV.");
+    }
+
+    console.log(
+      `Parsed CSV: ${rows.length} valid rows, ${malformedCount} malformed rows`
+    );
+
+    // For this sprint, just return counts + a sample
+    return res.status(200).json({
+      success: true,
+      rowCount: rows.length,
+      malformedCount,
+      // sampleRow: rows[0] || null, // uncomment if you want to debug via API
+    });
   } catch (err) {
-    console.error("Upload error:", err.message);
-    return res.status(500).send("Server Error");
+    if (err.code === "MISSING_HEADERS") {
+      console.error("CSV header validation failed:", err.message);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+
+    console.error("CSV parse error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to parse CSV.",
+    });
   }
 });
 
