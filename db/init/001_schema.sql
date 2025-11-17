@@ -13,7 +13,7 @@ defense_team TEXT,
 
 quarter    INT,
 down       INT,
-ydstogo    INT,
+distance    INT,
 yardline_100 INT,
 goal_to_go   BOOLEAN,
 

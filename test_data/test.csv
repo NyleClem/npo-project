@@ -1,0 +1,2 @@
+game_id,play_id,season,week,home_team,away_team,posteam,defteam,qtr,down,ydstogo,yardline_100,goal_to_go,play_type,shotgun,no_huddle,pass_length,pass_location,run_location,run_gap,yards_gained,epa,success,desc
+1,1,2023,1,PHI,NE,PHI,NE,1,1,10,75,0,pass,1,0,short,right,,,-2,-0.3,0,"test desc"
