@@ -5,6 +5,7 @@ const express = require("express");
 const cors = require("cors");
 const { parsePlayCsv } = require("./csvPlayParser");
 const { insertPlays } = require("./playInsertService");
+const { getAnalyticsPlaceholder } = require("./analyticsPlaceholder");
 require("dotenv").config();
 const app = express();
 app.use(cors());
@@ -20,21 +21,6 @@ app.get("/db-ping", async (req, res) => {
   } catch (err) {
     console.error("DB ping failed:", err); //  Log the real error to the server console for debugging
     res.status(500).json({ ok: false, error: err.message }); // ← Send a safe error payload to the client
-  }
-});
-//DB ROUTES TESTING
-//Create a new Play
-app.post("/play", async (req, res) => {
-  try {
-    const { game_id, play_id, down, epa, success } = req.body;
-    const newPlay = await pool.query(
-      "INSERT INTO plays (game_id,play_id,down,epa,success)VALUES($1,$2,$3,$4,$5) RETURNING *",
-      [game_id, play_id, down, epa, success]
-    );
-    res.json(newPlay.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
   }
 });
 
@@ -91,7 +77,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-//Get all Plays
+//Get all play information according to filters
 app.get("/play", async (req, res) => {
   try {
     // Filters: offense_team, defense_team, down
@@ -112,7 +98,9 @@ app.get("/play", async (req, res) => {
       conditions.push(`down = $${values.length}`);
     }
 
-    const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
     const sql = `SELECT * FROM plays ${whereClause}`;
     const result = await pool.query(sql, values);
     res.json(result.rows);
@@ -124,4 +112,9 @@ app.get("/play", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server has started on port ${PORT}`);
+});
+// Simple analytics placeholder endpoint
+app.get("/analytics", (req, res) => {
+  const payload = getAnalyticsPlaceholder();
+  res.json(payload);
 });
