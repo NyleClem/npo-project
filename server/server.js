@@ -94,8 +94,28 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 //Get all Plays
 app.get("/play", async (req, res) => {
   try {
-    const allPlays = await pool.query("SELECT * FROM plays");
-    res.json(allPlays.rows);
+    // Filters: offense_team, defense_team, down
+    const { offense_team, defense_team, down } = req.query;
+    const conditions = [];
+    const values = [];
+
+    if (offense_team) {
+      values.push(offense_team);
+      conditions.push(`offense_team = $${values.length}`);
+    }
+    if (defense_team) {
+      values.push(defense_team);
+      conditions.push(`defense_team = $${values.length}`);
+    }
+    if (down) {
+      values.push(Number(down));
+      conditions.push(`down = $${values.length}`);
+    }
+
+    const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const sql = `SELECT * FROM plays ${whereClause}`;
+    const result = await pool.query(sql, values);
+    res.json(result.rows);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
