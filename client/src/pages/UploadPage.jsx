@@ -1,6 +1,7 @@
 // client/src/pages/Upload.jsx
+import PageContainer from "../components/PageContainer";
 import { useState } from "react";
-import Layout from "../components/Layout";
+
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -93,7 +94,8 @@ export default function Upload() {
   }
 
   return (
-    <Layout>
+      <PageContainer>
+        <div className="page-container">
       <div className="w-full flex justify-center items-start py-10">
         <div className="w-full max-w-xl bg-gray-900 border border-gray-700 rounded-xl shadow-lg p-6 text-gray-100">
           <h1 className="text-2xl font-bold mb-2">
@@ -176,6 +178,7 @@ export default function Upload() {
           </form>
         </div>
       </div>
-    </Layout>
+      </div>
+    </PageContainer>
   );
 }

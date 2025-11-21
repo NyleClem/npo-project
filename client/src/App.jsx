@@ -1,18 +1,20 @@
-// client/src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+import NavBar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
-import Upload from "./pages/UploadPage";
+import UploadPage from "./pages/UploadPage";   
 import ViewDataPage from "./pages/ViewDataPage";
 
-export default function App() {
+function App() {
   return (
     <BrowserRouter>
+      <NavBar />
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/upload" element={<Upload />} />
+        <Route path="/upload" element={<UploadPage />} />
         <Route path="/view" element={<ViewDataPage />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;

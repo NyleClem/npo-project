@@ -1,37 +1,71 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import Logo from "../assets/MaadScienceLogo.png";
 
-export default function Navbar() {
-    const navitems = [
-        { name: "Dashboard", path: "/" },
-        { name: "Upload Data", path: "/upload" },
-        { name: "View Data", path: "/view" },
-    ];
+const NavBar = () => {
+  return (
+    <nav
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "16px 32px",
+        borderBottom: "1px solid #e5e5e5",
+        background: "#ffffff"
+      }}
+    >
+      {/* Left Section - Logo and Title */}
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <img
+          src={Logo}
+          alt="MaadScience Logo"
+          style={{
+            width: "90px",
+            height: "auto",
+            objectFit: "contain"
+          }}
+        />
+        <span style={{ fontSize: "1.25rem", fontWeight: 600 }}>
+          NFL Personnel Optimizer
+        </span>
+      </div>
 
-    return (
-        <nav aria-label="Main navigation" className="bg-gray-900 text-gray-100 px-6 py-4 shadow-md">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <div>
-                    <Link to="/" className="text-2xl font-bold">NFL Personnel Optimizer</Link>
-                </div>
+      {/* Right Section - Links */}
+      <div style={{ display: "flex", gap: "24px" }}>
+        <NavLink
+          to="/"
+          style={({ isActive }) => ({
+            color: isActive ? "#007bff" : "#333",
+            textDecoration: isActive ? "underline" : "none",
+            fontSize: "1rem"
+          })}
+        >
+          Dashboard
+        </NavLink>
 
-                <ul className="flex items-center space-x-6">
-                    {navitems.map((item) => (
-                        <li key={item.path}>
-                            <NavLink
-                                to={item.path}
-                                end
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? "font-semibold text-blue-400 border-b-2 border-blue-400 pb-1 transition duration-150"
-                                        : "hover:text-blue-400 transition duration-150"
-                                }
-                            >
-                                {item.name}
-                            </NavLink>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </nav>
-    );
-}
+        <NavLink
+          to="/upload"
+          style={({ isActive }) => ({
+            color: isActive ? "#007bff" : "#333",
+            textDecoration: isActive ? "underline" : "none",
+            fontSize: "1rem"
+          })}
+        >
+          Upload Data
+        </NavLink>
+
+        <NavLink
+          to="/view"
+          style={({ isActive }) => ({
+            color: isActive ? "#007bff" : "#333",
+            textDecoration: isActive ? "underline" : "none",
+            fontSize: "1rem"
+          })}
+        >
+          View Data
+        </NavLink>
+      </div>
+    </nav>
+  );
+};
+
+export default NavBar;
