@@ -1,55 +1,118 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function PlaysTable() {
   const [plays, setPlays] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchPlays() {
-      try {
-        const res = await fetch("http://localhost:3000/play");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setPlays(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchPlays();
-  }, []);
+  const [offenseTeam, setOffenseTeam] = useState("");
+  const [defenseTeam, setDefenseTeam] = useState("");
+  const [down, setDown] = useState("");
 
-  if (loading) return <p className="text-center py-8 text-gray-600">Loading plays…</p>;
-  if (error) return <p className="text-center py-8 text-red-600">Error: {error}</p>;
-  if (!plays.length) return <p className="text-center py-8 text-gray-600">No plays found.</p>;
+  const canFetch = offenseTeam.trim() !== "" || defenseTeam.trim() !== "" || down.trim() !== "";
+
+
+
+
+
+
+
+
+
+  async function fetchPlays() {
+    if (!canFetch) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (offenseTeam.trim()) params.append("offense_team", offenseTeam.trim());
+      if (defenseTeam.trim()) params.append("defense_team", defenseTeam.trim());
+      if (down.trim()) params.append("down", down.trim());
+
+      const url = `http://localhost:3000/play?${params.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Network response was not ok");
+      const data = await res.json();
+      setPlays(data);
+    } catch (err) {
+      setError(err.message);
+      setPlays([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const columns = plays.length ? Object.keys(plays[0]) : [];
+
+
 
   return (
-    <div className="card overflow-x-auto">
-      <table className="min-w-full text-left">
-        <thead>
-          <tr className="border-b">
-            <th className="px-4 py-3 text-sm font-medium text-gray-700">Game ID</th>
-            <th className="px-4 py-3 text-sm font-medium text-gray-700">Play ID</th>
-            <th className="px-4 py-3 text-sm font-medium text-gray-700">Down</th>
-            <th className="px-4 py-3 text-sm font-medium text-gray-700">EPA</th>
-            <th className="px-4 py-3 text-sm font-medium text-gray-700">Success</th>
-          </tr>
-        </thead>
+    <div>
+      <div className="mb-4 p-4 bg-gray-900 rounded">
+        <h3 className="text-lg font-semibold mb-2 text-gray-100">Filter plays</h3>
+        <div className="flex gap-2 flex-wrap">
+          <input
+            aria-label="Offense team"
+            placeholder="Offense team"
+            value={offenseTeam}
+            onChange={(e) => setOffenseTeam(e.target.value)}
+            className="px-3 py-2 rounded bg-gray-800 text-gray-100 border border-gray-700"
+          />
+          <input
+            aria-label="Defense team"
+            placeholder="Defense team"
+            value={defenseTeam}
+            onChange={(e) => setDefenseTeam(e.target.value)}
+            className="px-3 py-2 rounded bg-gray-800 text-gray-100 border border-gray-700"
+          />
+          <input
+            aria-label="Down"
+            placeholder="Down (e.g. 1,2,3,4)"
+            value={down}
+            onChange={(e) => setDown(e.target.value)}
+            className="px-3 py-2 rounded bg-gray-800 text-gray-100 border border-gray-700 w-28"
+          />
+          <button
+            onClick={fetchPlays}
+            disabled={!canFetch || loading}
+            className="px-4 py-2 rounded bg-blue-600 disabled:opacity-50 text-white"
+          >
+            {loading ? "Loading..." : "Show Plays"}
+          </button>
+        </div>
+        {!canFetch && <p className="text-sm text-gray-300 mt-2">Please enter at least one filter before viewing plays.</p>}
+      </div>
 
-        <tbody>
-          {plays.map((p) => (
-            <tr key={`${p.game_id}-${p.play_id}`} className="odd:bg-white even:bg-gray-50">
-              <td className="px-4 py-3 text-sm text-gray-800">{p.game_id}</td>
-              <td className="px-4 py-3 text-sm text-gray-800">{p.play_id}</td>
-              <td className="px-4 py-3 text-sm text-gray-800">{p.down ?? "-"}</td>
-              <td className="px-4 py-3 text-sm text-gray-800">{p.epa ?? "-"}</td>
-              <td className="px-4 py-3 text-sm text-gray-800">{p.success ? "Yes" : "No"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {error && <p className="text-center mt-4 text-red-500">Error: {error}</p>}
+
+      {!plays.length && !loading && canFetch && <p className="text-center mt-4">No plays found for the provided filters.</p>}
+
+      {plays.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-800 text-gray-100 rounded-lg overflow-hidden shadow-lg">
+            <thead className="bg-gray-900">
+              <tr>
+                {columns.map((col) => (
+                  <th key={col} className="px-4 py-2 text-left whitespace-nowrap">
+                    {col.replace(/_/g, " ")}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {plays.map((p, idx) => (
+                <tr key={idx} className="even:bg-gray-700 odd:bg-gray-800 hover:bg-gray-600 align-top">
+                  {columns.map((c) => (
+                    <td key={c} className="px-4 py-2 align-top whitespace-nowrap">
+                      {p[c] === null || p[c] === undefined ? "-" : String(p[c])}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
