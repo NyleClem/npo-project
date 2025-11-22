@@ -11,6 +11,14 @@ export default function PlaysTable() {
 
   const canFetch = offenseTeam.trim() !== "" || defenseTeam.trim() !== "" || down.trim() !== "";
 
+
+
+
+
+
+
+
+
   async function fetchPlays() {
     if (!canFetch) return;
     setLoading(true);
@@ -35,6 +43,8 @@ export default function PlaysTable() {
   }
 
   const columns = plays.length ? Object.keys(plays[0]) : [];
+
+
 
   return (
     <div>

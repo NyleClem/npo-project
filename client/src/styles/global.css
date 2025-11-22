@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #fafafa;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-container {
+  max-width: 800px;        /* controls width — adjust as you like */
+  margin: 40px auto;       /* centers the box on the page */
+  padding: 30px;
+
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
