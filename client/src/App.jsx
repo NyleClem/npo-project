@@ -7,7 +7,10 @@ import ViewDataPage from "./pages/ViewDataPage";
 function App() {
   return (
     <BrowserRouter>
+      {/* Global navigation bar */}
       <NavBar />
+
+      {/* Define application routes */}
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/upload" element={<UploadPage />} />

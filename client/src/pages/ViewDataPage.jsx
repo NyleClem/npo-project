@@ -5,10 +5,11 @@ export default function ViewDataPage() {
   return (
     <PageContainer>
       <div className="page-container">
-      <div>
-        <h1 className="text-2xl font-bold mb-4">Play Data</h1>
-        <PlaysTable />
-      </div>
+        {/* Displays the plays table inside a styled page container */}
+        <div>
+          <h1 className="text-2xl font-bold mb-4">Play Data</h1>
+          <PlaysTable />
+        </div>
       </div>
     </PageContainer>
   );
