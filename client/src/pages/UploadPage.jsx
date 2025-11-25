@@ -2,7 +2,7 @@
 import PageContainer from "../components/PageContainer";
 import { useState } from "react";
 
-
+// File + upload UI state
 export default function Upload() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
@@ -14,6 +14,7 @@ export default function Upload() {
   const apiBaseUrl =
     import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
+    // Handles selecting a file + validates (.csv only)
   function handleFileChange(e) {
     setError("");
     setStatus("");
@@ -95,6 +96,7 @@ export default function Upload() {
 
   return (
       <PageContainer>
+        {/* Upload card */}
         <div className="page-container">
       <div className="w-full flex justify-center items-start py-10">
         <div className="w-full max-w-xl bg-gray-900 border border-gray-700 rounded-xl shadow-lg p-6 text-gray-100">
@@ -106,6 +108,7 @@ export default function Upload() {
             offensive play data to upload.
           </p>
 
+            {/* Upload form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* File input */}
             <div>
@@ -143,7 +146,7 @@ export default function Upload() {
                 {error}
               </div>
             )}
-
+            {/* Success message */}
             {status && (
               <div className="rounded-md bg-emerald-900/60 border border-emerald-500 px-3 py-2 text-sm text-emerald-100">
                 {status}
@@ -160,7 +163,7 @@ export default function Upload() {
                 </div>
               </div>
             )}
-
+              {/* Submit button */}
             <div className="pt-2">
               <button
                 type="submit"

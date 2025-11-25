@@ -4,12 +4,19 @@ const Dashboard = () => {
   return (
     <PageContainer>
       <div className="page-container">
+
+        {/* Center the smaller dashboard card inside the main container */}
     <div className="w-full flex justify-center mt-10">
+
+      {/* The actual dashboard box */}
       <div className="p-8 bg-white shadow-md rounded-xl w-[400px]">
+
+         {/* Title */}
         <h1 className="text-2xl font-semibold mb-6 text-center">
           Dashboard
         </h1>
 
+        {/* Navigation link to View page */}
         <div className="flex flex-col gap-4">
           <NavLink
             to="/view"
@@ -17,7 +24,7 @@ const Dashboard = () => {
           >
             View Data
           </NavLink>
-
+        {/* Navigation link to Upload page */}
           <NavLink
             to="/upload"
             className="p-3 text-center bg-gray-100 hover:bg-gray-200 rounded-lg"
