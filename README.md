@@ -24,12 +24,13 @@ cd npo-project
 ## 2. Start Docker Container
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 
 ## 3. Acessing Web App
-
-```bash
+IN BROWSER
 Frontend: http://localhost:5173
-Backend: http://localhost:3000/play
+Backend PLAY JSON: http://localhost:3000/play
+Backend PlaceHolder Analytics Module: http://localhost:3000/analytics
 ```
+
